@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1544096187161.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F9CFBB5B",
+    "lastKnownWriteTime" : 1544115304,
+    "last_content_update" : 1544115304727,
+    "path" : "~/Documents/Projects/r projects/TemperaturePrediction/TemperaturePrediction/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+        "cursorPosition" : "101,49",
+        "scrollLine" : "86",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

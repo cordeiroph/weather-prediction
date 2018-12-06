@@ -1,0 +1,14 @@
+table#tabVarDesc {
+    width: 50%; 
+    background-color: #4a4e54;
+}
+table#tabVarDesc tr:nth-child(even) {
+    background-color: #eee;
+}
+table#tabVarDesc tr:nth-child(odd) {
+    background-color: #fff;
+}
+table#tabVarDesc th {
+    color: white;
+    background-color: #4a4e54;
+}

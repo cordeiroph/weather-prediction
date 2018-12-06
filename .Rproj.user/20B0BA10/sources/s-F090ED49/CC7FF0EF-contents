@@ -1,0 +1,57 @@
+plotUi <- function(id){
+  ns <- NS(id)
+  fluidPage(
+    
+    titlePanel("Create your graphic"),
+    sidebarPanel(
+      selectInput(inputId = "graphic",
+                  label = "Choose a Graphic:",
+                  choices = c("scatterplot","barplot", "histogram", "boxplot", "correlation graph", "correlation matrix", "density")),
+      
+      conditionalPanel(
+        condition = "input.graphic != 'correlation graph' && input.graphic != 'correlation matrix'",
+        selectInput(inputId = "x",
+                    label = "X Variable:",
+                    choices = colnames(getDataSet()))      
+      ),
+      
+      conditionalPanel(
+        condition = "input.graphic == 'correlation graph' || input.graphic == 'correlation matrix'",
+        selectInput(inputId = "corMethod",
+                    label = "Correlation Method:",
+                    choices = c("spearman", "pearson", "kendal"))      
+      ),
+      
+      conditionalPanel(
+        condition = "input.graphic == 'correlation graph'",
+        numericInput(inputId = "minCor",
+                     min = 0, max =1,
+                     value = 0,
+                     label = "Absolute value of Minimum Correlation:")      
+      ),
+      
+      conditionalPanel(
+        condition = "input.graphic != 'histogram' && 
+        input.graphic != 'barplot' && 
+        input.graphic != 'correlation graph' && 
+        input.graphic != 'correlation matrix' && 
+        input.graphic != 'density'",
+        selectInput(inputId = "y",
+                    label = "Y Variable:",
+                    choices = colnames(getDataSet()))      
+      ),
+      
+      conditionalPanel(
+        condition = "input.graphic == 'scatterplot'",
+        selectInput(inputId = "scatMethod",
+                    label = "Linear method:",
+                    choices = c("lm", "loess"))      
+      ),
+      
+      actionButton("graphiGenerator", "Create graphic")
+  ),
+  mainPanel(plotOutput("plot"))
+  )  
+}
+  
+  

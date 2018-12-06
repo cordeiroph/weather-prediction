@@ -1,0 +1,21 @@
+setwd("/Users/phrc/Documents/Projects/r projects")
+df <- read.csv("Assignment 2.csv")
+df$No <- NULL 
+df <- na.omit(df)
+df2 <- na.omit(head(df, n=100))
+df3 <- df2
+df3$cbwd <- NULL
+df4 <- df
+df4$cbwd <- NULL
+
+getDataSet <- function(){
+  setwd("/Users/phrc/Documents/Projects/r projects")
+  df <- read.csv("Assignment 2.csv")
+  return(df)
+}
+
+getNonNullDataSet <- function(){
+  setwd("/Users/phrc/Documents/Projects/r projects")
+  df <- read.csv("Assignment 2.csv")
+  return(na.omit(df))
+}
