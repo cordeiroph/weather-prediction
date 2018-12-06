@@ -1,3 +1,0 @@
-library(shiny)
-
-runApp("/Users/phrc/Documents/Projects/r projects/TemperaturePrediction/TemperaturePrediction.Rproj")
