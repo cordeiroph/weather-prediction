@@ -102,7 +102,10 @@ shinyServer(function(input, output) {
                        group_by_(.dots = v$pdTimePlot) %>%
                        summarise_(.dots = setNames(summ, summ_name))
                      
-                     g <- ggplot(dfGrouped, aes_string(x=v$pdTimePlot)) + 
+#                     dfGrouped$date <-
+#                       apply( dfGrouped[ , v$pdTimePlot ] , 1 , paste , collapse = "/" )
+                     
+                     g <- ggplot(dfGrouped, aes(x=date)) + 
                        geom_line(aes_string(y=summ_name))
                    } 
                    

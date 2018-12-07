@@ -1,4 +1,14 @@
-
+library(ggplot2)
+library(xlsx)
+library(plyr)
+library(ggplot2)
+library(magrittr)
+library(dplyr)
+library(corrr)
+library(gridExtra)
+library(ggcorrplot)
+library(GGally)
+library(shiny)
 
 
 dfGrouped <- group_by(df, df[[x]]) + summarise(mean(TEMP) )
@@ -43,27 +53,40 @@ summarise_vars <- list(list(x, y))
   g <- ggplot(dfGrouped, aes_string(x=x)) + 
     geom_line(aes_string(y=y))  
   
-  setwd("/Users/phrc/Documents/Projects/r projects")
+  setwd("/home/phrc/R Projects/TemperaturePrediction/")
   df <- read.csv("Assignment 2.csv")
   
   
-  x <- c('year', 'month')
+  x <- c('year')
   y <- 'TEMP'
-  w <- 'min'
+  w <- 'mean'
   
   summ <- paste0(w,'(', y, ')')  
   summ_name <- y  
   
+  summ2 <-paste0('paste0(',x,')')
+  summ_name2 <- 'date'
+  
   dfGrouped <- df %>%
     group_by_(.dots = x) %>%
-    summarise_(.dots = setNames(summ, summ_name))
+    summarise_(.dots = setNames(summ, summ_name)) 
   
-  dfGrouped <- dfGrouped %>%
-    group_by_(.dots = x) %>%
-    mutate_(.dots = paste0('val = paste0(',x,')'))
   
-  g <- ggplot(dfGrouped, aes_string(x=x[2])) + 
+  
+  dfGrouped$date <-
+    apply( dfGrouped[ , x ] , 1 , paste , collapse = "/" )
+  
+  g <- ggplot(dfGrouped, aes(x=date)) + 
     geom_line(aes_string(y=y))  
   
   print(g)
+  
+  head(dfGrouped)
+  
+    paste0(c(dfGrouped$year, dfGrouped$year))
+  
+  dfGrouped <- dfGrouped %>%
+    group_by_(.dots = x) %>%
+    mutate_(.dots = setNames(summ2, summ_name2))
+  
   

@@ -95,7 +95,7 @@ plotUi <- function(id){
         condition = "input.graphic == 'timeplot'",
         selectInput(inputId = "pdTimePlot",
                     label = "Period Precission:",
-                    choices = c("year","month","day","hour"), multiple = TRUE)      
+                    choices = c("year","month","day","hour"), multiple = FALSE)      
       ),
       conditionalPanel(
         condition = "input.graphic == 'timeplot'",
