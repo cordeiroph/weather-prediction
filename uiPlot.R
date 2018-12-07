@@ -108,7 +108,16 @@ plotUi <- function(id){
       # Action Button ------------
       actionButton("graphiGenerator", "Create graphic")
     ),
-    mainPanel(plotOutput("plot"))
+    mainPanel(
+      conditionalPanel(
+        condition = "input.graphic != 'timeplot'",
+        plotOutput("plot")
+      ),
+      conditionalPanel(
+        condition = "input.graphic == 'timeplot'",
+        dygraphOutput("dygraph")
+      )
+    )
   )  
 }
 

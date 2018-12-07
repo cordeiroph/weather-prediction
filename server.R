@@ -9,6 +9,9 @@ library(gridExtra)
 library(ggcorrplot)
 library(GGally)
 library(shiny)
+library(dygraphs)
+library(xts)
+library(zoo)
 source("datasetLoader.R", local = TRUE)
 source("uiDataDescription.R", local = TRUE)
 
@@ -16,7 +19,9 @@ shinyServer(function(input, output) {
   df <- getDataSet()
   df2 <- head(getNonNullDataSet(), n=100)
   df4 <- getDataSet2()
-
+  df <- unite_(df, "date", c('year', 'month', 'day', 'hour'), sep = "/", remove = FALSE)
+  df$date <- as.POSIXct(df$date, format = "%Y/%m/%d/%H")
+  
   output$summary <- renderPrint({
     summary(df)
   })
@@ -49,6 +54,34 @@ shinyServer(function(input, output) {
       
   }) 
   
+  output$dygraph <- renderDygraph({
+    if(v$doPlot == FALSE) return()
+    
+    if(v$graphic == 'timeplot'){
+      t <- df
+      if(v$varTimePlot == "pm2.5"){
+        t <- na.omit(df)
+      }
+      
+      summ <- paste0(v$opTimePlot,'(', v$varTimePlot, ')')  
+      
+      
+      dfGrouped <-  t %>%
+        group_by(date = floor_date(date, v$pdTimePlot)) %>%
+        summarise_(.dots = setNames(summ, 'val'))
+      
+      g <- dygraph(xts(dfGrouped$val, dfGrouped$date)) %>% 
+        dyAxis("y", valueRange = c(min(dfGrouped$val), max(dfGrouped$val))) %>% 
+        dyOptions(colors = RColorBrewer::brewer.pal(3, "Set2")) %>%
+        dyRangeSelector()
+      
+      #g <- ggplot(dfGrouped, aes(x=date)) + 
+      # geom_line(aes_string(y=summ_name))
+      
+      g
+      
+    } 
+  })
   
   
   output$plot <- renderPlot({
@@ -92,25 +125,6 @@ shinyServer(function(input, output) {
                        g <- ggplot(df, aes_string(factor(df[[v$xBoxPlot]]), v$yBoxPlot)) + 
                          geom_boxplot()
                    } 
-                   else if(v$graphic == 'timeplot'){
-                     
-                     summ <- paste0(v$opTimePlot,'(', v$varTimePlot, ')')  
-                     summ_name <- v$varTimePlot  
-                     
-                     print(v$pdTimePlot)
-                     dfGrouped <- df %>%
-                       group_by_(.dots = v$pdTimePlot) %>%
-                       summarise_(.dots = setNames(summ, summ_name))
-                     
-#                     dfGrouped$date <-
-#                       apply( dfGrouped[ , v$pdTimePlot ] , 1 , paste , collapse = "/" )
-                     
-                     g <- ggplot(dfGrouped, aes(x=date)) + 
-                       geom_line(aes_string(y=summ_name))
-                   } 
-                   
-                   
-                   
                    
                    incProgress(1)
                    

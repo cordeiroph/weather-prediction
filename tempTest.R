@@ -9,6 +9,7 @@ library(gridExtra)
 library(ggcorrplot)
 library(GGally)
 library(shiny)
+library(tidyr)
 
 
 dfGrouped <- group_by(df, df[[x]]) + summarise(mean(TEMP) )
@@ -22,7 +23,7 @@ group_by(year) %>% summarise(TEMP = mean(TEMP))
 
 
 
-
+eco
 
 #bla
 summarise_vars <- list(list(x, y))
@@ -34,13 +35,48 @@ summarise_vars <- list(list(x, y))
   
   print(df_summ)
   
-  setwd("/Users/phrc/Documents/Projects/r projects")
+  setwd("/Users/phrc/Documents/Projects/r projects/weather-prediction")
   df <- read.csv("Assignment 2.csv")
+  x <- c('year', 'month', 'day', 'hour')
+  df <- unite_(df, "date", x, sep = "/", remove = FALSE)
+  df$date <- as.POSIXct(df$date, format = "%Y/%m/%d/%H")
+  df$date2 <- as.POSIXct(df$date, format = "%Y/%m/%d/%H")
   
-  
-  x <- 'year'
+  x <- 'month'
   y <- 'TEMP'
   w <- 'min'
+  
+  
+  summ <- paste0(w,'(', y, ')')  
+  summ_name <- y  
+  
+  dfGrouped <-  df %>%
+    group_by(date = floor_date(date, x)) %>%
+    summarise_(.dots = setNames(summ, "val"))
+  
+  
+  library(dygraphs)
+  library(xts)
+  library(zoo)
+  
+  
+  xt <- xts(cbind(df$TEMP), df$date)
+  g <- dygraph(xt) %>% 
+    dyAxis("y", valueRange = c(min(df$TEMP), max(df$TEMP))) %>% 
+    dyAxis("x", valueRange = c(min(df$date), max(df$date))) %>% 
+    dyOptions(colors = RColorBrewer::brewer.pal(3, "Set2")) %>%
+    dyRangeSelector()
+  
+  g
+  
+  
+  g <- ggplot(dfGrouped, aes(x=date)) + 
+    geom_line(aes_string(y=summ_name))
+  
+  g
+  
+  
+  
   
   summ <- paste0(w,'(', y, ')')  
   summ_name <- y  
@@ -58,7 +94,7 @@ summarise_vars <- list(list(x, y))
   df <- read.csv("Assignment 2.csv")
   
   
-  x <- c('year')
+  x <- c('year', 'month', 'day', 'hour')
   y <- 'TEMP'
   w <- 'mean'
   
@@ -74,13 +110,104 @@ summarise_vars <- list(list(x, y))
   
   
   
-  dfGrouped$date <-
-    apply( dfGrouped[ , x ] , 1 , paste , collapse = "/" )
+  df <- read.csv("Assignment 2.csv")
+  df <- unite_(df, "date", x, sep = "/", remove = FALSE)
+  df$date <- as.POSIXct(df$date, format = "%Y/%m/%d/%H")
+  
+  dfGrouped <-  df %>%
+  group_by(month=floor_date(date, "month")) %>%
+    summarize(summary_variable=sum(TEMP))
   
   g <- ggplot(dfGrouped, aes(x=date)) + 
-    geom_line(aes_string(y=y))  
+    geom_line(aes_string(y))  
+  print(g)  
   
-  print(g)
+    
+    
+    apply( df[ , x ] , 1 , paste , collapse = "-" )
+  
+  df$date <- as.Date(df$date)
+  
+  head(df)
+  
+  dfGrouped$year <- NULL
+  dfGrouped$month <- NULL
+  
+  g <- autoplot(dfGrouped)
+  g
+  library(lubridate)
+  library(tidyverse)
+  library(nycflights13)
+
+  
+  
+  print(v$pdTimePlot)
+  dfGrouped <- df %>%
+    group_by_(.dots = ) %>%
+    summarise_(.dots = setNames(summ, summ_name))
+  
+  #                     dfGrouped$date <-
+  #                       apply( dfGrouped[ , v$pdTimePlot ] , 1 , paste , collapse = "/" )
+    
+  df <- unite_(df, "date", x, sep = "/", remove = FALSE)
+  df$date <- as.POSIXct(df$date, format = "%Y/%m/%d/%H")
+  
+  dfGrouped <-  df %>%
+    group_by(year = floor_date(date, "month")) %>%
+    summarize(mean=sum(TEMP))
+  
+  g <- ggplot(dfGrouped, aes(x=year)) + 
+    geom_line(aes(y=mean))  
+  print(g)  
+  
+  g <- ggplot(df, aes(x=date)) + 
+    geom_line(aes(y=DEWP))  
+  print(g)  
+  
+  e <- economics
+  
+  xt <- xts(cbind(e$pop, e$pce), e$date)
+  g <- dygraph(xt) %>% 
+#    dyAxis("y", valueRange = c(min(e$pop), max(df$TEMP))) %>% 
+#    dyAxis("x", valueRange = c(min(df$date), max(df$date))) %>% 
+#    dyOptions(colors = RColorBrewer::brewer.pal(3, "Set2"))
+  #%>%
+  #  dyRangeSelector()
+  
+  g
+  
+  
+  library(WDI)
+  library(tidyr)
+  library(xts)
+  library(dplyr)
+  
+  df <- WDI(country = c("CN", "US"), indicator = "TX.QTY.MRCH.XD.WD", start = 1980, end = 2013, extra = FALSE)
+  
+  df$exports <- df$TX.QTY.MRCH.XD.WD
+  
+  df1 <- df %>%
+    select(country, year, exports) %>%
+    mutate(country = gsub("United States", "USA", df$country)) %>%
+    spread(key = country, value = exports) %>%
+    mutate(date = as.Date(as.character(year), format = "%Y")) %>%
+    select(-year) 
+  
+  xtdata <- xts(df1, order.by = df1$date) 
+  
+  xtdata$date <- NULL
+  
+  t <- dygraph(xtdata, main = "Export volume index, 1980-2013 (2000 = 100)") %>%
+    dyHighlight(highlightSeriesOpts = list(strokeWidth = 3)) %>%
+    dyOptions(colors = c("red", "navy"))
+  
+  print(t)
+  
+  
+  ggplot(economics, aes(x=date)) + 
+    geom_line(aes(y=pce))
+  
+
   
   head(dfGrouped)
   
@@ -89,5 +216,30 @@ summarise_vars <- list(list(x, y))
   dfGrouped <- dfGrouped %>%
     group_by_(.dots = x) %>%
     mutate_(.dots = setNames(summ2, summ_name2))
+  
+  
+  
+  library(ggplot2)
+  library(lubridate)
+  
+  e <- economics
+  
+  dt <- lubridate::as_date(e$date)
+  
+  
+  
+  xt <- xts(cbind(e$pce), lubridate::as_date(e$date))
+  
+  
+  library(dygraphs)
+  library(xts)
+  library(zoo)
+  data <- rnorm(5)
+  
+  dates <- seq(zoo::as.Date(2017), length=5, by="year")
+  xts2 <- xts(x=data, order.by=dates)
+  dygraph(xts2) %>% 
+    dyOptions(colors = RColorBrewer::brewer.pal(3, "Set2")) %>%
+    dyRangeSelector()
   
   
