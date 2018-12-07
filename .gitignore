@@ -38,3 +38,4 @@ rsconnect/
 
 #Apple Files
 .DS_Store
+.Rproj.user
