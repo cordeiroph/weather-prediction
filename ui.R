@@ -1,17 +1,20 @@
 source("datasetLoader.R", local = TRUE)
 source("uiPlot.R", local = TRUE)
 source("uiDataDescription.R", local = TRUE)
+source("uiLinearRegression.R", local = TRUE)
 
 shinyUI(
   navbarPage(
     "Weather Prediction!",
     tabPanel(
       "Data Description",
-      dataDescription("dataDescription")
+      dataDescription("dataDescription"),
+      actionButton('jumpToDtDesc', '')
     ),
     tabPanel(
       "Plots",
-      plotUi("plotUi")
+      plotUi("plotUi"),
+      actionButton('jumpToPlotUi', '')
     )
   )
 )

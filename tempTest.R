@@ -21,7 +21,7 @@ dfGrouped <- df %>% select_(x, y) %>% group_by_(x) %>% summarise_(.dots = setNam
 
 group_by(year) %>% summarise(TEMP = mean(TEMP))
 
-
+data.frame()
 
 eco
 
@@ -263,5 +263,91 @@ tt <- ttheme_default(colhead=list(fg_params = list(parse=TRUE)))
 grid.table(d, theme=tt)
 
 typeof(model$terms)
+#----------
+if(v$graphic == 'scatterplot'){
+  g <- ggplot(data = df, aes_string(v$xScatter, v$yScatter)) + 
+    stat_binhex() +
+    geom_smooth(method=v$scatMethod, fill="red", color="red") 
+  
+}
+else if(v$graphic == 'histogram'){
+  g <- ggplot(df, aes_string(v$xHist))  + 
+    geom_histogram(bins = input$binHist)
+} 
+else if (v$graphic == 'density'){
+  g <- ggplot(df, aes_string(v$xDensity)) + 
+    geom_density()
+}
+else if (v$graphic == 'correlation graph'){
+  dfcor <- df4 %>% correlate(method=v$corMethod)
+  dfcor[is.na(dfcor)] <- 0
+  #                     dfcor <- rearrange(dfcor)
+  g <- dfcor %>% 
+    network_plot(colours = c("red","green", "blue"), min_cor = v$minCor)
+  
+} 
+else if (v$graphic == 'correlation matrix'){
+  g <- ggcorrplot(cor(df4, method = v$corMethod), hc.order = TRUE, 
+                  type = "lower", 
+                  lab = TRUE, 
+                  lab_size = 4, 
+                  method="square", 
+                  ggtheme=theme_bw,
+                  colors = c("red","white", "blue"))
+}
+else if (v$graphic == 'boxplot'){
+  g <- ggplot(df, aes_string(factor(df[[v$xBoxPlot]]), v$yBoxPlot)) + 
+    geom_boxplot()
+} 
 
 
+observeEvent(input$jumpToLrUi,{
+  
+  print("Passed Here")
+  
+  output$plotLin <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   print("Passed Here 2")
+                   incProgress(0.5)
+                   grid.arrange( 
+                     
+                     gPM <- ggplot(na.omit(df), aes(x=pm2.5, y=TEMP)) + 
+                       stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     gPRES <- ggplot(df, aes(x=PRES, y=TEMP)) + 
+                       stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     gDEWP <- ggplot(df, aes(x=DEWP, y=TEMP)) + 
+                       stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     gIws <- ggplot(df, aes(x=Iws, y=TEMP)) + 
+                       stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     gIs <- ggplot(df, aes(x=Is, y=TEMP)) + 
+                       stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     gIr <- ggplot(df, aes(x=Ir, y=TEMP)) + 
+                       stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     nrow = 3
+                   )
+                   
+                   incProgress(1)
+                   
+                 })
+  })  
+})
+
+,
+tabPanel(
+  "Linear Regresseion",
+  lrUi("lrUi"),
+  actionButton('jumpToLrUi', '')
+)
