@@ -6,6 +6,7 @@ source("uiLinearRegression.R", local = TRUE)
 shinyUI(
   navbarPage(
     "Weather Prediction!",
+    id = "tabs",
     tabPanel(
       "Data Description",
       dataDescription("dataDescription"),
@@ -14,7 +15,12 @@ shinyUI(
     tabPanel(
       "Plots",
       plotUi("plotUi"),
-      actionButton('jumpToPlotUi', '')
+      value = 1
+    ),
+    tabPanel(
+      "Linear Regression",
+      lrUi("lrUi"),
+      value = 2
     )
   )
 )

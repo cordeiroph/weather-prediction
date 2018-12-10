@@ -35,7 +35,7 @@ shinyServer(function(input, output) {
   })
   
   # Plot Tab ----------  
-
+  
   v <- reactiveValues(doPlot = FALSE)
   
   observeEvent(input$graphiGenerator, {
@@ -56,7 +56,7 @@ shinyServer(function(input, output) {
     v$varTimePlot <- input$varTimePlot
     v$pdTimePlot <- input$pdTimePlot
     v$opTimePlot <- input$opTimePlot
-      
+    
   }) 
   
   output$dygraph <- renderDygraph({
@@ -81,7 +81,7 @@ shinyServer(function(input, output) {
         dyRangeSelector()
       
       g
- 
+      
     } 
   })
   
@@ -92,7 +92,7 @@ shinyServer(function(input, output) {
     withProgress(message = 'Making plot', value = 0, 
                  {
                    incProgress(0.5)
-
+                   
                    g <- GraphicGenerator$new(df)
                    g <- g$generateGraphic(
                      type = v$graphic,
@@ -106,7 +106,7 @@ shinyServer(function(input, output) {
                      lmMethod = v$scatMethod, 
                      corMethod = v$corMethod, 
                      minCor = v$minCor)
-
+                   
                    incProgress(1)
                    
                    if(!is.null(g)){
@@ -119,7 +119,45 @@ shinyServer(function(input, output) {
   
   # Linear Regression Tab ----------  
   
- 
+  output$plotLin <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                   g<- grid.arrange( 
+                     gPM <- ggplot(na.omit(df), aes(x=pm2.5, y=TEMP)) + 
+                       ggplot2::stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     gPRES <- ggplot(df, aes(x=PRES, y=TEMP)) + 
+                       ggplot2::stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     gDEWP <- ggplot(df, aes(x=DEWP, y=TEMP)) + 
+                       ggplot2::stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     gIws <- ggplot(df, aes(x=Iws, y=TEMP)) + 
+                       ggplot2::stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     gIs <- ggplot(df, aes(x=Is, y=TEMP)) + 
+                       ggplot2::stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     gIr <- ggplot(df, aes(x=Ir, y=TEMP)) + 
+                       ggplot2::stat_binhex() +
+                       geom_smooth(method="lm"),
+                     
+                     nrow = 2
+                   )
+                   incProgress(1)
+                   
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                 })                   
+  })
   
   
   

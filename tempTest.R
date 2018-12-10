@@ -351,3 +351,31 @@ tabPanel(
   lrUi("lrUi"),
   actionButton('jumpToLrUi', '')
 )
+#----------------
+,
+mainPanel(
+  helpText("Check for linearity, Homoscedasticity for quantitative variables"),
+  plotOutput(outputId = "plotLin"),
+  helpText("Result: \n Only Pres and Dewp has a linearity and homoscedasticity "),
+  helpText("Linear Regression for the variable Pres and Dewp "),
+  textOutput(outputId = "sumLMPD"),
+  plotOutput(outputId = "plotQQNormPD"),
+  textOutput(outputId = "ksTestPD"),
+  textOutput(outputId = "adTestPD"),
+  textOutput(outputId = "resultLMPD"),
+  
+  helpText("Linear Regression for the variable Pres"),
+  textOutput(outputId = "sumLMP"),
+  plotOutput(outputId = "plotQQNormPD"),
+  textOutput(outputId = "ksTestP"),
+  textOutput(outputId = "adTestP"),
+  textOutput(outputId = "resultLMP"),
+  
+  helpText("Linear Regression for the variable Dewp"),
+  textOutput(outputId = "sumLMD"),
+  plotOutput(outputId = "plotQQNormPD"),
+  textOutput(outputId = "ksTestD"),
+  textOutput(outputId = "adTestD"),
+  textOutput(outputId = "resultLMD")
+  
+)

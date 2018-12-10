@@ -12,3 +12,21 @@ table#tabVarDesc th {
     color: white;
     background-color: #4a4e54;
 }
+p.box {
+    text-align: center;
+    color: #ffffff;
+    background : #4b5970;
+    border-radius: 8px;
+    padding: 30px;
+    max-width: 500px;
+    text-align: left;
+    text-size: 60pt;
+
+}
+
+pre.lm {
+  width: auto; 
+  height: auto; 
+  max-width: 1000px; 
+  max-height: 400px;
+}

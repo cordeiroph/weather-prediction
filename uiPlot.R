@@ -1,5 +1,3 @@
-library(dygraphs)
-
 plotUi <- function(id){
   ns <- NS(id)
   fluidPage(
@@ -110,20 +108,7 @@ plotUi <- function(id){
       # Action Button ------------
       actionButton("graphiGenerator", "Create graphic")
     ),
-    mainPanel(
-      conditionalPanel(
-        condition = "input.graphic != 'timeplot'",
-        plotOutput("plot")
-      ),
-      conditionalPanel(
-        condition = "input.graphic == 'scatterplot'",
-        tableOutput("lrTable")
-      ),
-      conditionalPanel(
-        condition = "input.graphic == 'timeplot'",
-        dygraphOutput("dygraph")
-      )
-    )
+    mainPanel(plotOutput("plot"))
   )  
 }
 
