@@ -243,3 +243,25 @@ summarise_vars <- list(list(x, y))
     dyRangeSelector()
   
   
+  
+  
+setwd("/Users/phrc/Documents/Projects/r projects/weather-prediction")
+df <- read.csv("Assignment 2.csv")
+x <- 'DEWP'
+y <- 'TEMP'
+
+model <- lm(df[[y]]~df[[x]], df)
+summary(model)
+
+model$coefficients[1]
+model$coefficients[2]
+
+d <- data.frame(c(model$coefficients[1]), c(model$coefficients[2]))
+colnames(d) <- c('intercept', 'slope')
+
+tt <- ttheme_default(colhead=list(fg_params = list(parse=TRUE)))
+grid.table(d, theme=tt)
+
+typeof(model$terms)
+
+

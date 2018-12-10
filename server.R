@@ -12,6 +12,7 @@ library(shiny)
 library(dygraphs)
 library(xts)
 library(zoo)
+library(lubridate)
 source("datasetLoader.R", local = TRUE)
 source("uiDataDescription.R", local = TRUE)
 
@@ -19,7 +20,7 @@ shinyServer(function(input, output) {
   df <- getDataSet()
   df2 <- head(getNonNullDataSet(), n=100)
   df4 <- getDataSet2()
-  df <- unite_(df, "date", c('year', 'month', 'day', 'hour'), sep = "/", remove = FALSE)
+  df <- tidyr::unite_(df, "date", c('year', 'month', 'day', 'hour'), sep = "/", remove = FALSE)
   df$date <- as.POSIXct(df$date, format = "%Y/%m/%d/%H")
   
   output$summary <- renderPrint({
@@ -67,7 +68,7 @@ shinyServer(function(input, output) {
       
       
       dfGrouped <-  t %>%
-        group_by(date = floor_date(date, v$pdTimePlot)) %>%
+        group_by(date = lubridate::floor_date(date, v$pdTimePlot)) %>%
         summarise_(.dots = setNames(summ, 'val'))
       
       g <- dygraph(xts(dfGrouped$val, dfGrouped$date)) %>% 
@@ -75,11 +76,8 @@ shinyServer(function(input, output) {
         dyOptions(colors = RColorBrewer::brewer.pal(3, "Set2")) %>%
         dyRangeSelector()
       
-      #g <- ggplot(dfGrouped, aes(x=date)) + 
-      # geom_line(aes_string(y=summ_name))
-      
       g
-      
+ 
     } 
   })
   
@@ -91,10 +89,13 @@ shinyServer(function(input, output) {
                  {
                    incProgress(0.5)
                    
+                   g <- NULL
+                   
                    if(v$graphic == 'scatterplot'){
                      g <- ggplot(data = df, aes_string(v$xScatter, v$yScatter)) + 
                        stat_binhex() +
                        geom_smooth(method=v$scatMethod, fill="red", color="red") 
+                     
                    }
                    else if(v$graphic == 'histogram'){
                      g <- ggplot(df, aes_string(v$xHist))  + 
@@ -128,8 +129,22 @@ shinyServer(function(input, output) {
                    
                    incProgress(1)
                    
-                   print(g)
+                   if(!is.null(g)){
+                     print(g)
+                   }
                  })
   })
   
+  output$lrTable <- renderTable(getLinearTable(df[[v$yScatter]], df[[v$xScatter]], df, v$doPlot))
+  
 })
+
+getLinearTable <- function(x, y, df, doPlot = FALSE){
+  if(doPlot == FALSE) return()
+  
+  model <- lm(y~x, df)
+  d <- data.frame(c(model$coefficients[1]), c(model$coefficients[2]))
+  colnames(d) <- c('intercept', 'slope')
+  
+  return (d)
+}

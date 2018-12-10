@@ -1,3 +1,5 @@
+library(dygraphs)
+
 plotUi <- function(id){
   ns <- NS(id)
   fluidPage(
@@ -112,6 +114,10 @@ plotUi <- function(id){
       conditionalPanel(
         condition = "input.graphic != 'timeplot'",
         plotOutput("plot")
+      ),
+      conditionalPanel(
+        condition = "input.graphic == 'scatterplot'",
+        tableOutput("lrTable")
       ),
       conditionalPanel(
         condition = "input.graphic == 'timeplot'",
