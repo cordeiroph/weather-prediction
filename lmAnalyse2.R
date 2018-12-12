@@ -348,13 +348,14 @@ normalidade(both$residuals)
 hist(both$residuals)
 
 
-pred1 <- predict(both, newdata = test)
+
 
 actuals_preds <- data.frame(cbind(actuals=test$TEMP, predicteds=pred1)) 
 correlation_accuracy <- cor(actuals_preds)
 
 correlation_accuracy
 
+pred1 <- predict(both, newdata = test)
 rmse <- sqrt(sum((exp(pred1) - test$TEMP)^2)/length(test$TEMP))
 c(RMSE = rmse, R2=summary(both)$r.squared)
 
@@ -403,4 +404,13 @@ c(RMSE = rmse, R2=summary(both)$r.squared)
 
 par(mfrow=c(1,1))
 plot(test$TEMP, (pred1))
+
+#-----
+# AIC / T value / P value / Rsquare R adjust Square / normality / Confidence Interval 
+
+# Check for statisc significance -> (T|P value)
+# Check for normality  -> (RMSE R2 R adjust Square)
+# Check fitting  -> AIC (compare models) | RMSE
+# Check the sample its true repesentation of the population -> CI
+
 
