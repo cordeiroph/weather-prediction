@@ -1,7 +1,6 @@
 library(ggplot2)
 library(xlsx)
 library(plyr)
-library(ggplot2)
 library(magrittr)
 library(dplyr)
 library(corrr)
@@ -13,12 +12,17 @@ library(dygraphs)
 library(xts)
 library(zoo)
 library(lubridate)
+library(MASS)
+library(R6)
+library(nortest)
 source("datasetLoader.R", local = TRUE)
 source("uiDataDescription.R", local = TRUE)
 source("uiLinearRegression.R", local = TRUE)
 source("ModelGraphicGenerator.R", local = TRUE)
+source("ModelLinearRegression.R", local = TRUE)
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
+  
   df <- getDataSet()
   df2 <- head(getNonNullDataSet(), n=100)
   df4 <- getDataSet2()
@@ -85,7 +89,6 @@ shinyServer(function(input, output) {
     } 
   })
   
-  
   output$plot <- renderPlot({
     if(v$doPlot == FALSE) return()
     
@@ -119,50 +122,228 @@ shinyServer(function(input, output) {
   
   # Linear Regression Tab ----------  
   
-  output$plotLin <- renderPlot({
+  linearModel <- ModelLinearRegression$new(df)
+  
+  output$plotOutLiers <- renderPlot({
+    print("Enter here")
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   g <- linearModel$outlierPlot(linearModel$dfQnt)
+                   
+                   incProgress(1)
+                   
+                   if(!is.null(g)){
+                     g
+                   }
+                   
+                 })                   
+  }, width = 600, height = 800)
+  
+  output$plotLinear <- renderPlot({
     withProgress(message = 'Making plot', value = 0, 
                  {
                    incProgress(0.5)
                    
-                   g<- grid.arrange( 
-                     gPM <- ggplot(na.omit(df), aes(x=pm2.5, y=TEMP)) + 
-                       ggplot2::stat_binhex() +
-                       geom_smooth(method="lm"),
-                     
-                     gPRES <- ggplot(df, aes(x=PRES, y=TEMP)) + 
-                       ggplot2::stat_binhex() +
-                       geom_smooth(method="lm"),
-                     
-                     gDEWP <- ggplot(df, aes(x=DEWP, y=TEMP)) + 
-                       ggplot2::stat_binhex() +
-                       geom_smooth(method="lm"),
-                     
-                     gIws <- ggplot(df, aes(x=Iws, y=TEMP)) + 
-                       ggplot2::stat_binhex() +
-                       geom_smooth(method="lm"),
-                     
-                     gIs <- ggplot(df, aes(x=Is, y=TEMP)) + 
-                       ggplot2::stat_binhex() +
-                       geom_smooth(method="lm"),
-                     
-                     gIr <- ggplot(df, aes(x=Ir, y=TEMP)) + 
-                       ggplot2::stat_binhex() +
-                       geom_smooth(method="lm"),
-                     
-                     nrow = 2
-                   )
+                   g <- linearModel$linearPlot(linearModel$dfQnt)
+                   
                    incProgress(1)
                    
                    if(!is.null(g)){
                      print(g)
                    }
                  })                   
+  }, width = 600, height = 800)
+  
+  output$plotCorrelation <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                   g <- linearModel$correlationPlot(linearModel$dfQnt)
+                   
+                   incProgress(1)
+                   
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                 })                   
+  }, width = 600, height = 800)
+  
+  output$plotDensity <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                   g <- linearModel$densityPlot(linearModel$dfQnt)
+                   
+                   incProgress(1)
+                   
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                 })                   
+  }, width = 600, height = 800)
+  
+  output$plotLinearNO <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                   g <- linearModel$linearPlot(linearModel$dfQntNoOutLiers)
+                   
+                   incProgress(1)
+                   
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                 })                   
+  }, width = 600, height = 800)
+  
+  output$plotCorrelationNO <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                   g <- linearModel$correlationPlot(linearModel$dfQntNoOutLiers)
+                   
+                   incProgress(1)
+                   
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                 })                   
+  }, width = 600, height = 800)
+  
+  output$plotDensityNO <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                   g <- linearModel$densityPlot(linearModel$dfQntNoOutLiers)
+                   
+                   incProgress(1)
+                   
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                 })                   
+  }, width = 600, height = 800)
+
+  output$plotBoxPlot <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                   g <- linearModel$catPlot(linearModel$dfCat)
+                   
+                   incProgress(1)
+                   
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                 })                   
+  }, width = 600, height = 800)
+  
+  output$plotBoxPlotBySeason <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                  g <- linearModel$catPlotBySeason(linearModel$dfCat)
+                   
+                   incProgress(1)
+                   
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                 })                   
+  }, width = 600, height = 800)
+  
+  output$plotDensityCat <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                   g <- linearModel$catDensityPlot(linearModel$dfCat)
+                   
+                   incProgress(1)
+                   
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                 })                   
+  }, width = 600, height = 800)
+  
+  linearModel$setTrainAndTestDS(linearModel$dfModel)
+  models <- linearModel$createModels(linearModel$dfModel)
+  pred <- linearModel$predict(models$pd)
+  actuals_preds <- data.frame(cbind(actuals=linearModel$testDS$TEMP, predicteds=pred)) 
+  
+  output$mdCompPD <-  renderPrint({
+    anova(models$pd)
   })
   
+  output$mdCompD <-  renderPrint({
+    anova(models$d)
+  })
   
+  output$mdCompP <-  renderPrint({
+    anova(models$p)
+  })
   
+  output$summaryPD <-  renderPrint({
+    anova(models$pd)
+  })
   
-})
+  output$coefficientsPD <-  renderPrint({
+    coefficients(models$pd)
+  })
+  
+  output$normalidadeResiduals <-  renderPrint({
+    linearModel$normalidade(models$pd$residuals)
+  })
+  
+  output$normalidadeResidualsPlot <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                   g <- hist(models$pd$residuals)
+
+                   incProgress(1)
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                   
+                 })                   
+  }, width = 600, height = 800)
+  
+  output$predictionPlot <- renderPlot({
+    withProgress(message = 'Making plot', value = 0, 
+                 {
+                   incProgress(0.5)
+                   
+                   g <- plot(linearModel$testDS$TEMP, (pred))
+                   
+                   incProgress(1)
+                   if(!is.null(g)){
+                     print(g)
+                   }
+                   
+                 })                   
+  }, width = 600, height = 800)
+  
+  output$correlationAccuracyPred <-  renderPrint({
+    cor(actuals_preds)
+  })
+  
+  output$rSquarePred <-  renderPrint({
+    rmse <- sqrt(sum((exp(pred) - linearModel$testDS$TEMP)^2)/length(linearModel$testDS$TEMP))
+    c(RMSE = rmse, R2=summary(models$pd)$r.squared)
+  })
+  
+  })
 
 getLinearTable <- function(x, y, df, doPlot = FALSE){
   if(doPlot == FALSE) return()

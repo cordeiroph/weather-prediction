@@ -277,8 +277,6 @@ normalidade<-function(x){
   t1 <- ks.test(x, "pnorm",mean(x), sd(x)) # KS  
   t2 <- lillie.test(x) # Lilliefors
   t3 <- cvm.test(x) # Cram?r-von Mises
-  # t4 <- shapiro.test(x) # Shapiro-Wilk 
-  #  t5 <- sf.test(x) # Shapiro-Francia
   t6 <- ad.test(x) # Anderson-Darling
   t7<-pearson.test(x) # Pearson Test of Normality
   

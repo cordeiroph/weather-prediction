@@ -14,13 +14,12 @@ shinyUI(
     ),
     tabPanel(
       "Plots",
-      plotUi("plotUi"),
-      value = 1
+      plotUi("plotUi")
     ),
     tabPanel(
       "Linear Regression",
-      lrUi("lrUi"),
-      value = 2
+      lrUi("lrUi")
+      
     )
   )
 )

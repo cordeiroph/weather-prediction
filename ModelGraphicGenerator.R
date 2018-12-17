@@ -58,14 +58,22 @@ GraphicGenerator <- R6Class(
     )
   },
   generateCorrelationGraph = function(corMethod, minCor){
-    dfcor <- self$df %>% correlate(method=corMethod)
+    temp <- self$df
+    temp$date <- NULL
+    temp$cbwd <- NULL
+    print(head(temp))
+    dfcor <- temp %>% correlate(method=corMethod)
     dfcor[is.na(dfcor)] <- 0
     return ( dfcor %>% 
       network_plot(colours = c("red","green", "blue"), min_cor = minCor))
   },
   generateCorrelationMatrix = function(corMethod){
+    temp <- self$df
+    temp$date <- NULL
+    temp$cbwd <- NULL
+    print(head(temp))
     return(
-      ggcorrplot(cor(self$df, method = corMethod), hc.order = TRUE, 
+      ggcorrplot(cor(na.omit(temp), method = corMethod), hc.order = TRUE, 
                  type = "lower", 
                  lab = TRUE, 
                  lab_size = 4, 

@@ -25,8 +25,13 @@ p.box {
 }
 
 pre.lm {
-  width: auto; 
-  height: auto; 
-  max-width: 1000px; 
-  max-height: 400px;
+  width: 650px; 
+  height: 850px; 
+}
+
+.grid-container {
+  display: inline-grid;
+  grid-column-gap: 50px;
+  grid-row-gap: 50px;
+  grid-template-columns: 650px 650px ;
 }
