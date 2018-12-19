@@ -343,7 +343,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$rSquarePred <-  renderPrint({
-    rmse <- sqrt(sum((exp(pred) - linearModel$testDS$TEMP)^2)/length(linearModel$testDS$TEMP))
+    rmse <- sqrt(mean(models$model$residuals^2))
     c(RMSE = rmse, R2=summary(models$pd)$r.squared)
   })
   
