@@ -18,8 +18,10 @@ library(nortest)
 source("datasetLoader.R", local = TRUE)
 source("uiDataDescription.R", local = TRUE)
 source("uiLinearRegression.R", local = TRUE)
+source("uiLMComparison.R", local = TRUE)
 source("ModelGraphicGenerator.R", local = TRUE)
 source("ModelLinearRegression.R", local = TRUE)
+source("ModelLMComparison.R", local = TRUE)
 
 shinyServer(function(input, output, session) {
   
@@ -345,6 +347,23 @@ shinyServer(function(input, output, session) {
   output$rSquarePred <-  renderPrint({
     rmse <- sqrt(mean(models$model$residuals^2))
     c(RMSE = rmse, R2=summary(models$pd)$r.squared)
+  })
+  
+  # Linear Regression Model Comparison ----------
+  lmComp = ModelLMComparison$new(df)
+  lmComp$createModels()
+  
+  output$plotLMTable1 <- renderPrint({
+    anova(lmComp$fit1)
+  })
+  
+  output$plotLMTable2 <- renderPrint({
+    anova(lmComp$fit2)
+  })
+  
+  
+  output$plotLMComparison <- renderPlot({
+    lmComp$generateScatterPlot()
   })
   
   })

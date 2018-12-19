@@ -37,12 +37,7 @@ lrUi <- function(id){
       h5("The Correlation between the predict value and the real value is 0.929, what means there is a high linear correlation"),
       h4("Root Mean Square Error (RMSE)"),
       h5("It represents the standar deviation of the residuals (predicted values)"),
-      h5("The model RMSE is 4.53 what it means there is a error in the prediction of 4.5 degrees celsious for higher or lower"),
-      h5(""),
-      h5(""),
-      h5(""),
-      h5("")
-      
+      h5("The model RMSE is 4.53 what it means there is a error in the prediction of 4.5 degrees celsious for higher or lower")
     ),
     mainPanel(
       tabsetPanel( 
@@ -56,10 +51,10 @@ lrUi <- function(id){
                  htmlTemplate("www/categoricalVariablesAnalyse.html", brush = ns("brush3"))
         ),
         tabPanel("Model Visualisation", 
-                 htmlTemplate("www/linearRegressionModeling.html", brush = ns("brush3"))
+                 htmlTemplate("www/linearRegressionModeling.html", brush = ns("brush4"))
         ),
         tabPanel("Prediction Visualisation", 
-                 htmlTemplate("www/predictionView.html", brush = ns("brush3"))
+                 htmlTemplate("www/predictionView.html", brush = ns("brush5"))
         )
       )
     )

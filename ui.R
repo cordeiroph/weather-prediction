@@ -2,6 +2,8 @@ source("datasetLoader.R", local = TRUE)
 source("uiPlot.R", local = TRUE)
 source("uiDataDescription.R", local = TRUE)
 source("uiLinearRegression.R", local = TRUE)
+source("uiLMComparison.R", local = TRUE)
+
 
 shinyUI(
   navbarPage(
@@ -19,6 +21,11 @@ shinyUI(
     tabPanel(
       "Linear Regression",
       lrUi("lrUi")
+      
+    ),
+    tabPanel(
+      "Linear Regression Model Comparison",
+      lmComparison("lmComparison")
       
     )
   )
