@@ -84,7 +84,7 @@ GraphicGenerator <- R6Class(
   },
   generateBoxPlot = function(xVar, yVar){
     return(
-      ggplot(self$df, aes_string(factor(df[[xVar]]), yVar)) + 
+      ggplot(self$df, aes_string(factor(self$df[[xVar]]), yVar)) + 
         geom_boxplot()
     )
   }
