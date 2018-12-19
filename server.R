@@ -277,7 +277,7 @@ shinyServer(function(input, output, session) {
   
   linearModel$setTrainAndTestDS(linearModel$dfModel)
   models <- linearModel$createModels(linearModel$dfModel)
-  pred <- linearModel$predict(models$pd)
+  pred <- linearModel$predict(models$model)
   actuals_preds <- data.frame(cbind(actuals=linearModel$testDS$TEMP, predicteds=pred)) 
   
   output$mdCompPD <-  renderPrint({
@@ -292,16 +292,20 @@ shinyServer(function(input, output, session) {
     anova(models$p)
   })
   
+  output$mdCompModel <-  renderPrint({
+    anova(models$model)
+  })
+  
   output$summaryPD <-  renderPrint({
-    anova(models$pd)
+    anova(models$model)
   })
   
   output$coefficientsPD <-  renderPrint({
-    coefficients(models$pd)
+    coefficients(models$model)
   })
   
   output$normalidadeResiduals <-  renderPrint({
-    linearModel$normalidade(models$pd$residuals)
+    linearModel$normalidade(models$model$residuals)
   })
   
   output$normalidadeResidualsPlot <- renderPlot({
@@ -309,7 +313,7 @@ shinyServer(function(input, output, session) {
                  {
                    incProgress(0.5)
                    
-                   g <- hist(models$pd$residuals)
+                   g <- hist(models$model$residuals)
 
                    incProgress(1)
                    if(!is.null(g)){

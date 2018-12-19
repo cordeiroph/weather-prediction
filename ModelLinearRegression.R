@@ -270,13 +270,17 @@ ModelLinearRegression <- R6Class(
       
       fit2 <- lm(TEMP ~ 1, self$trainDS)
       
+      fitFinal <- lm(TEMP ~ season+dayPeriod+DEWP+PRES,data=self$trainDS)
+      
       both1 <- stepAIC(fit2,direction="both",scope=list(upper=fit1,lower=fit2))
       
       both1a <- stepAIC(fit2,direction="both",scope=list(upper=fit1a,lower=fit2))
       
       both1b <- stepAIC(fit2,direction="both",scope=list(upper=fit1b,lower=fit2))
+      
+      bothFinal <- stepAIC(fit2,direction="both",scope=list(upper=fitFinal,lower=fit2))
 
-      return(list("pd" = both1, "d" = both1a, "p" = both1b))
+      return(list("pd" = both1, "d" = both1a, "p" = both1b, "model" = bothFinal))
       
     },
     
